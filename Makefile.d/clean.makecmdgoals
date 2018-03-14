@@ -1,0 +1,30 @@
+# vim: ft=make
+# makecmdgoals framework: build directory cleaning
+# copyright (c) 2018 Mikhail Usenko <michaelus@tochka.ru>
+
+
+# don't try to rebuild this makefile
+[clean.makecmdgoals] := $(lastword $(MAKEFILE_LIST))
+$([clean.makecmdgoals]):: ;
+
+
+# use common definitions
+include $(join $(dir $([clean.makecmdgoals])),framework.defs)
+$(call !trace!,$$(\)[$$($${})],[clean.makecmdgoals])
+
+
+.DEFAULT_GOAL = $({CURRENT_BUILD_DIR})
+
+
+.PHONY: $(.DEFAULT_GOAL) $(MAKECMDGOALS)
+$(.DEFAULT_GOAL) $(MAKECMDGOALS):
+	$(info $(\) *** ($@: $^))
+	$(if $(filter-out $(realpath $(BUILD_ROOT))/%,$(realpath $@)/),\
+		$(warning The 'clean' rule for the path '$@' being not under the BUILD_ROOT='$(BUILD_ROOT)' is discarded.),\
+		$(if $(call !is-equal!,$(realpath $(ROOT)),$(realpath $@)),\
+			$(warning The 'clean' rule for the path '$@' being the same as the ROOT='$(ROOT)' is discarded.),\
+			test "$$(realpath -e '$@')" != "/" && \
+			test "$$(realpath -e '$@')" != "//" && \
+			rm -vrf '$@'/*))
+
+

@@ -1,0 +1,216 @@
+# vim: ft=make
+# makecmdgoals framework: common definitions and default settings
+# copyright (c) 2018 Mikhail Usenko <michaelus@tochka.ru>
+
+
+# don't try to rebuild this makefile
+[framework.defs] := $(lastword $(MAKEFILE_LIST))
+$([framework.defs]):: ;
+
+# the include guard preventing multiple inclusion
+ifeq ($(words $(filter $([framework.defs]),$(MAKEFILE_LIST))),1)
+
+include $(join $(dir $([framework.defs])),Make.defs)
+
+
+# !DEBUG-BUILD-OVERLOAD!
+# (NAME or dbgNAME, if the latter variable is defined and there is defined debug flag) <- (NAME)
+define !D! =
+$(if $(call !is-defined!,debug),$(or $(call !is-defined!,dbg$1),$1),$1)
+endef
+
+
+# note:
+# 	the following {VARIABLE}s are intended to be only used as final overload-aware read-only references in formulas
+
+{ROOT} = $($(call !D!,ROOT))
+{BUILD_ROOT} = $($(call !D!,BUILD_ROOT))
+
+{HOST_OS} = $(call !to-upper!,$(strip $($(call !D!,HOST_OS))))
+{TARGET_OS} = $(call !to-upper!,$(strip $($(call !D!,TARGET_OS))))
+{HOST_ARCH} = $(call !to-upper!,$(strip $($(call !D!,HOST_ARCH))))
+
+{WINVER} = $(strip $($(call !D!,WINVER)))
+
+{CXX} = $($(call !D!,CXX))
+{CXXRUNFLAGS} = $($(call !D!,CXXRUNFLAGS))
+
+{CPP} = $($(call !D!,CPP))
+{CPPFLAGS} = $($(call !D!,CPPFLAGS))
+{CPPWINFLAGS} = $($(call !D!,CPPWINFLAGS))
+{IFLAGS} = $($(call !D!,IFLAGS))
+
+{CXXSTD} = $($(call !D!,CXXSTD))
+{CXXFLAGS} = $($(call !D!,CXXFLAGS))
+{CXXWINFLAGS} = $($(call !D!,CXXWINFLAGS))
+{WFLAGS} = $($(call !D!,WFLAGS))
+
+{TARGET_ARCH_FLAGS} = $($(call !D!,TARGET_ARCH_FLAGS))
+
+{LDFLAGS} = $($(call !D!,LDFLAGS))
+{LDEXTRAS} = $($(call !D!,LDEXTRAS))
+{LDLIBS} = $($(call !D!,LDLIBS))
+{LDSHARED} = $(strip $($(call !D!,LDSHARED)))
+{LDSTATIC} = $(strip $($(call !D!,LDSTATIC)))
+{LDOUT} = $($(call !D!,LDOUT))
+{SONAME_VERSION} = $(strip $($(call !D!,SONAME_VERSION)))
+{SOFILE_VERSION} = $(strip $($(call !D!,SOFILE_VERSION)))
+
+{AR} = $($(call !D!,AR))
+{ARFLAGS} = $($(call !D!,ARFLAGS))
+{AREXTRAS} = $($(call !D!,AREXTRAS))
+{AROUT} = $($(call !D!,AROUT))
+
+{SOURCES} = $(strip $($(call !D!,SOURCES)))
+{HEADERS} = $(strip $($(call !D!,HEADERS)))
+{CXX_SOURCE_SUFFIXES} = $($(call !D!,CXX_SOURCE_SUFFIXES))
+{CXX_HEADER_SUFFIXES} = $($(call !D!,CXX_HEADER_SUFFIXES))
+
+{WINDRES} = $(strip $($(call !D!,WINDRES)))
+{WINDRES_SOURCES} = $(strip $($(call !D!,WINDRES_SOURCES)))
+
+
+# !BUILD-PATHNAME!
+# (absolute file pathnames with ROOT replaced with BUILD_ROOT) <- (files)
+# note:
+# 	$(dir $(abspath ...)) is used here rather than $(abspath $(dir ...)) to get a slash-terminated result
+define !BUILD-PATHNAME! =
+$(foreach \
+	{file},$1,$(if \
+		$(filter $(abspath $({BUILD_ROOT}))/%,$(abspath $({file}))),$(abspath $({file})),$(join \
+			$(patsubst $(abspath $({ROOT}))/%,$(abspath $({BUILD_ROOT}))/%,$(dir $(abspath $({file})))),$(notdir $(abspath $({file}))))))
+endef
+
+{CURRENT_BUILD_DIR} = $(call !BUILD-PATHNAME!,$(CURDIR))
+
+
+# note:
+# 	we don't bother about dbgVARIABLEs, since having been defined by the user they are completely under user's
+# 	responsibility,	but when we are adding something to a variable it should be done for appropriate version
+
+BUILD_ROOT ?= $({ROOT})/build
+dbgBUILD_ROOT ?= $({ROOT})/build.debug
+
+HOST_OS ?= $(shell uname -o)
+
+ifeq ($({HOST_OS}),MSYS)
+TARGET_OS ?= Windows
+else ifeq ($({HOST_OS}),CYGWIN)
+TARGET_OS ?= Windows
+else
+TARGET_OS ?= $({HOST_OS})
+endif
+
+HOST_ARCH ?= $(shell uname -m)
+
+ifeq ($({TARGET_OS}),WINDOWS)
+# (Windows 7)
+WINVER ?= 0x0601
+endif
+
+ifeq ($(origin CXX),default)  # if CXX built-in variable has not been reassigned from its predefined value ...
+ifeq ($({TARGET_OS}),WINDOWS)
+ifneq ($({HOST_ARCH}),X86_64)
+CXX = i686-w64-mingw32-g++
+else
+CXX = x86_64-w64-mingw32-g++
+endif
+endif
+endif
+
+CXXRUNFLAGS ?= -pipe
+ifneq ($(call !is-defined!,cxxverbose),)
+#override $(call !D!,CXXRUNFLAGS) += -v
+### XXX experimental:
+{CXXRUNFLAGS} += -v
+endif
+
+ifeq ($(origin CPP),default)  # if CPP built-in variable has not been reassigned from its predefined value ...
+CPP = $({CXX}) -E
+endif
+
+
+ifeq ($({TARGET_OS}),WINDOWS)
+ifneq ($({WINVER}),)
+#override $(call !D!,CPPWINFLAGS) += -D_WIN32_WINNT=$({WINVER})
+#$(call !trace!,$${}:={$$(value $${})},CPPWINFLAGS dbgCPPWINFLAGS)
+### XXX experimental:
+{CPPWINFLAGS} += -D_WIN32_WINNT=$({WINVER})
+endif
+#override $(call !D!,CPPFLAGS) += $({CPPWINFLAGS})
+#$(call !trace!,$${}:={$$(value $${})},CPPFLAGS dbgCPPFLAGS)
+### XXX experimental:
+{CPPFLAGS} += $({CPPWINFLAGS})
+endif
+
+ifeq ($({TARGET_OS}),WINDOWS)
+#override $(call !D!,CXXFLAGS) += $({CXXWINFLAGS})
+#$(call !trace!,$${}:={$$(value $${})},CXXFLAGS dbgCXXFLAGS)
+### XXX experimental:
+{CXXFLAGS} += $({CXXWINFLAGS})
+endif
+
+WFLAGS ?= -Wall -Wpedantic
+
+
+ifeq ($(origin AR),default)  # if AR built-in variable has not been reassigned from its predefined value ...
+ifeq ($({TARGET_OS}),WINDOWS)
+
+ifeq ($({HOST_OS}),MSYS) #(1)
+AR = ar
+else #(1)
+ifneq ($({HOST_ARCH}),X86_64) #(2)
+AR = i686-w64-mingw32-ar
+else #(2)
+AR = x86_64-w64-mingw32-ar
+endif #(2)
+endif #(1)
+
+endif
+endif
+
+ifeq ($(origin ARFLAGS),default)  # if ARFLAGS built-in variable has not been reassigned from its predefined value ...
+ARFLAGS = vrus
+endif
+
+
+CXX_SOURCE_SUFFIXES ?= .cpp .c
+CXX_HEADER_SUFFIXES ?= .hpp .h
+
+
+ifeq ($({TARGET_OS}),WINDOWS) #(1)
+ifeq ($({HOST_OS}),MSYS) #(2)
+WINDRES ?= windres
+else #(2)
+ifneq ($({HOST_ARCH}),X86_64) #(3)
+WINDRES ?= i686-w64-mingw32-windres
+else #(3)
+WINDRES ?= x86_64-w64-mingw32-windres
+endif #(3)
+endif #(2)
+else #(1)
+WINDRES ?= windres
+endif #(1)
+
+
+# !DEFINE-WITH-DEBUG-BUILD-OVERLOAD-HANDLING!
+# (NEW-NAME definition with formula from NAME but with debug build overload handling references) <- ((NEW-NAME),(NAME))
+# note:
+# 	the references of form of $(variable) only are subject of substitution with a call to !DEBUG-BUILD-OVERLOAD!,
+# 	therefore to protect some reference from being affected use the form of ${variable}
+# note:
+# 	the following variant which does not use an external utility works incorrectly in the general case,
+# 	since %-stem can only	recognize	words separated by spaces and might also has got captured chars
+# 	not belonging to variable names:
+# 	$(eval $1 = $(patsubst $$(%),$$($$(call !D!,%)),$(value $2)))
+#define !DD!
+#$(eval $1 = $(shell sed -e 's/\$$(\([^ ]\+\))/$$($$(call !D!,\1))/g' <<<'$(value $2)'))
+#endef
+
+{CXX_COMMAND} = $({CXX}) $({CXXRUNFLAGS}) $({CXXSTD}) $({CXXFLAGS}) $({WFLAGS}) $({CPPFLAGS}) $({IFLAGS}) $({TARGET_ARCH_FLAGS})
+
+{OBJECTS} = $(call !BUILD-PATHNAME!,$(addsuffix .o,$(basename $({SOURCES}))))
+{WINDRES_OBJECTS} = $(call !BUILD-PATHNAME!,$(addsuffix .windres,$(basename $({WINDRES_SOURCES}))))
+
+
+endif
