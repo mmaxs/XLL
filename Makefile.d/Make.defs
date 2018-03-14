@@ -186,7 +186,7 @@ endef
 # 	in output pattern is substituted with the word from the list;
 # 	e.g.: $(call !trace!,$${}=$$($${}),...)
 define !trace! =
-$(if $(findstring --trace,$(MAKEFLAGS)),$(strip $(foreach	{word},$2,$(eval $$(info $(subst $${},$({word}),$1))))))
+$(if $(findstring --trace,$(MAKEFLAGS)),$(strip $(foreach {word},$2,$(eval $$(info $(subst $${},$({word}),$1))))))
 endef
 
 
