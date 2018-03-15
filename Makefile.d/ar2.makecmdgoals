@@ -1,0 +1,56 @@
+# vim: ft=make
+# makecmdgoals framework: static library creating
+# copyright (c) 2018 Mikhail Usenko <michaelus@tochka.ru>
+
+
+# don't try to rebuild this makefile
+[ar.makecmdgoals] := $(lastword $(MAKEFILE_LIST))
+$([ar.makecmdgoals]):: ;
+
+
+# use common definitions
+include $(join $(dir $([ar.makecmdgoals])),framework.defs)
+$(call !trace!,$$(\)[$$($${})],[ar.makecmdgoals])
+
+
+# no default goal
+# (define it with recursively expanded assignment from any empty variable)
+.DEFAULT_GOAL = $@
+
+
+{AR_COMMAND} = $({AR}) $({ARFLAGS})
+
+{AR_MEMBERS} = $({OBJECTS}) $({AREXTRAS})
+
+
+$(call !trace!,$${}={$$($${})},{AR_MEMBERS})
+############################################
+ifneq ($(strip $({AR_MEMBERS})),)
+
+
+AROUT ?= $(call !BUILD-PATHNAME!,$(call !patsubst-filename!,%,lib%.a,$(MAKECMDGOALS)))
+
+{AR_TARGETS} = $(addsuffix ($({AR_MEMBERS})),$(AROUT))
+
+
+$(MAKECMDGOALS): $({AR_TARGETS})
+
+
+# use secondary expansion to make target-specific and automatic variables
+# used in rule prerequisites to be properly expanded
+.SECONDEXPANSION:
+$({AR_TARGETS}): $$% | $$(dir $$@)
+	$(info $(\) *** ($@($%): $^))
+	$({AR_COMMAND}) '$@'  '$^'
+
+
+$(sort $(dir $(AROUT))):
+	mkdir -p '$@'
+
+
+# warn on the fall back to the predefined implicit rules (if a target file does not exist yet)
+$(foreach {suffix},$({CXX_SOURCE_SUFFIXES}),$(eval %: %$({suffix}) ; $$(warning The implicit rule ($$@: $$^) is discarded.)))
+(%): % ; $(warning The implicit rule ($@($%): $^) is discarded.)
+
+endif
+
