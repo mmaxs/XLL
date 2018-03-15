@@ -27,5 +27,5 @@ clean:
 framewrk:
 	$(info $(\) @@@ ($@: $^))
 	$(MAKE) -f '$(ROOT)/Makefile.d/compile.makecmdgoals' $@
-	$(MAKE) -f '$(ROOT)/Makefile.d/ar.makecmdgoals' $@
+	$(MAKE) -f '$(ROOT)/Makefile.d/ar2.makecmdgoals' $@
 
