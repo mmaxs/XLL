@@ -50,7 +50,7 @@ endef
 
 # (files with replaced filenames (paths are not affected)) <- ((matching pattern in filenames),(replacement pattern),(files))
 define !patsubst-filename! =
-$(join $(dir $3),$(patsubst $1,$2,$(notdir $3)))
+$(foreach {file},$3,$(join $(dir $({file})),$(patsubst $1,$2,$(notdir $({file})))))
 endef
 
 # (nonexisting files that cause $(realpath) to fail) <- (files)
