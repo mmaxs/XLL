@@ -20,14 +20,15 @@ $(call !trace!,$$(\)[$$($${})],[ar.makecmdgoals])
 
 {AR_COMMAND} = $({AR}) $({ARFLAGS})
 
-AROUT ?= $(call !BUILD-PATHNAME!,$(call !patsubst-filename!,%,lib%.a,$@))
-
 {AR_MEMBERS} = $({OBJECTS}) $({AREXTRAS})
 
 
 $(call !trace!,$${}={$$($${})},{AR_MEMBERS})
 ############################################
 ifneq ($(strip $({AR_MEMBERS})),)
+
+
+AROUT ?= $(call !BUILD-PATHNAME!,$(call !patsubst-filename!,%,lib%.a,$@))
 
 
 # use secondary expansion to make target-specific and automatic variables
