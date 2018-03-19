@@ -60,7 +60,10 @@ $({WINDRES_OBJECTS}):
 
 
 # do compile the object files
-$(filter-out $({WINDRES_OBJECTS}),$(MAKECMDGOALS)): $({WINDRES_OBJECTS}) ;
+{MAKECMDGOALS} = $(filter-out $({WINDRES_OBJECTS}),$(MAKECMDGOALS))
+ifneq ($({MAKECMDGOALS}),)
+$({MAKECMDGOALS}): $({WINDRES_OBJECTS}) ;
+endif
 
 
 endif

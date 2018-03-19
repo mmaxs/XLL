@@ -65,7 +65,10 @@ $({OBJECTS}):
 
 
 # do compile the object files
-$(filter-out $({OBJECTS}),$(MAKECMDGOALS)): $({OBJECTS}) ;
+{MAKECMDGOALS} = $(filter-out $({OBJECTS}),$(MAKECMDGOALS))
+ifneq ($({MAKECMDGOALS}),)
+$({MAKECMDGOALS}): $({OBJECTS}) ;
+endif
 
 
 else

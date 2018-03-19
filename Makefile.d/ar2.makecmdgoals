@@ -33,7 +33,10 @@ AROUT ?= $(call !BUILD-PATHNAME!,$(call !patsubst-filename!,%,lib%.a,$(MAKECMDGO
 {AR_TARGETS} = $(addsuffix ($({AR_MEMBERS})),$(AROUT))
 
 
-$(filter-out $({AR_TARGETS}),$(MAKECMDGOALS)): $({AR_TARGETS})
+{MAKECMDGOALS} = $(filter-out $({AR_TARGETS}),$(MAKECMDGOALS))
+ifneq ($({MAKECMDGOALS}),)
+$({MAKECMDGOALS}): $({AR_TARGETS}) ;
+endif
 
 
 # use secondary expansion to make target-specific and automatic variables
@@ -49,7 +52,6 @@ $(sort $(dir $(AROUT))):
 
 
 # warn on the fall back to the predefined implicit rules (if a target file does not exist yet)
-$(foreach {suffix},$({CXX_SOURCE_SUFFIXES}),$(eval %: %$({suffix}) ; $$(warning The implicit rule ($$@: $$^) is discarded.)))
 (%): % ; $(warning The implicit rule ($@($%): $^) is discarded.)
 
 endif
