@@ -65,7 +65,7 @@ $({OBJECTS}):
 
 
 # do compile the object files
-$(MAKECMDGOALS): $({OBJECTS}) ;
+$(filter-out $({OBJECTS}),$(MAKECMDGOALS)): $({OBJECTS}) ;
 
 
 else

@@ -33,7 +33,7 @@ AROUT ?= $(call !BUILD-PATHNAME!,$(call !patsubst-filename!,%,lib%.a,$(MAKECMDGO
 {AR_TARGETS} = $(addsuffix ($({AR_MEMBERS})),$(AROUT))
 
 
-$(MAKECMDGOALS): $({AR_TARGETS})
+$(filter-out $({AR_TARGETS}),$(MAKECMDGOALS)): $({AR_TARGETS})
 
 
 # use secondary expansion to make target-specific and automatic variables

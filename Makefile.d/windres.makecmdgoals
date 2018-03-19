@@ -60,7 +60,7 @@ $({WINDRES_OBJECTS}):
 
 
 # do compile the object files
-$(MAKECMDGOALS): $({WINDRES_OBJECTS}) ;
+$(filter-out $({WINDRES_OBJECTS}),$(MAKECMDGOALS)): $({WINDRES_OBJECTS}) ;
 
 
 endif
