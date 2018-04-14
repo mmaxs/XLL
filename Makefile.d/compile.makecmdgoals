@@ -16,6 +16,7 @@ $(call !trace!,$$(\)[$$($${})],[compile.makecmdgoals])
 # no default goal
 # (define it with recursively expanded assignment from any empty variable)
 .DEFAULT_GOAL = $@
+.PHONY: $(MAKECMDGOALS)
 
 
 {COMPILE_COMMAND} = $({CXX_COMMAND})  -c
