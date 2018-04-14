@@ -28,7 +28,7 @@ export
 
 .PHONY: clean
 clean:
-	$(MAKE) -f '$(ROOT)/Makefile.d/clean.makecmdgoals'
+	$(MAKE) -f '$(ROOT)/Makefile.d/clean.makecmdgoals' $@
 
 
 windres:

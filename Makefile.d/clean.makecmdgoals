@@ -13,18 +13,21 @@ include $(join $(dir $([clean.makecmdgoals])),framework.defs)
 $(call !trace!,$$(\)[$$($${})],[clean.makecmdgoals])
 
 
-.DEFAULT_GOAL = $({CURRENT_BUILD_DIR})
+# no default goal
+# (define it with recursively expanded assignment from any empty variable)
+.DEFAULT_GOAL = $@
+.PHONY: $(MAKECMDGOALS)
 
 
-.PHONY: $(.DEFAULT_GOAL) $(MAKECMDGOALS)
-$(.DEFAULT_GOAL) $(MAKECMDGOALS):
+{TARGET_DIR} = $({CURRENT_BUILD_DIR})
+
+$(MAKECMDGOALS):
 	$(info $(\) *** ($@: $^))
-	$(if $(filter-out $(realpath $(BUILD_ROOT))/%,$(realpath $@)/),\
-		$(warning The 'clean' rule for the path '$@' being not under the BUILD_ROOT='$(BUILD_ROOT)' is discarded.),\
-		$(if $(call !is-equal!,$(realpath $(ROOT)),$(realpath $@)),\
-			$(warning The 'clean' rule for the path '$@' being the same as the ROOT='$(ROOT)' is discarded.),\
-			test "$$(realpath -e '$@')" != "/" && \
-			test "$$(realpath -e '$@')" != "//" && \
-			rm -vrf '$@'/*))
-
+	$(if $(filter-out $(realpath $(BUILD_ROOT))/%,$(realpath $({TARGET_DIR}))/),\
+		$(warning The 'clean' rule for the path '$({TARGET_DIR})' being not under the BUILD_ROOT='$(BUILD_ROOT)' is discarded.),\
+		$(if $(call !is-equal!,$(realpath $(ROOT)),$(realpath $({TARGET_DIR}))),\
+			$(warning The 'clean' rule for the path '$({TARGET_DIR})' being the same as the ROOT='$(ROOT)' is discarded.),\
+			test "$$(realpath -e '$({TARGET_DIR})')" != "/" && \
+			test "$$(realpath -e '$({TARGET_DIR})')" != "//" && \
+			rm -vrf '$({TARGET_DIR})'/*))
 
