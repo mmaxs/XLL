@@ -41,11 +41,13 @@ export
 sdk_sample/%/: .phony
 	$(MAKE) -C 'sdk_sample/$*' $*
 
+
 sdk_sample/framewrk/%: .phony
 	$(MAKE) -C 'sdk_sample/framewrk' $*
 
-sdk_sample/generic/: sdk_sample/framewrk/
-sdk_sample/generic/generic: sdk_sample/framewrk/
+
 sdk_sample/generic/%: .phony
 	$(MAKE) -C 'sdk_sample/generic' $*
 
+sdk_sample/generic/: sdk_sample/framewrk/
+sdk_sample/generic/generic: sdk_sample/framewrk/
