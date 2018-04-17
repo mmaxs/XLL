@@ -35,7 +35,6 @@ AROUT ?= $(call !BUILD-PATHNAME!,$(call !patsubst-filename!,%,lib%.a,$@))
 # use secondary expansion to make target-specific and automatic variables
 # used in rule prerequisites to be properly expanded
 .SECONDEXPANSION:
-$(MAKECMDGOALS): $$(MAKEFILE_LIST)
 $(MAKECMDGOALS): $$({AR_MEMBERS}) | $$(dir $$({AROUT}))
 	$(info $(\) *** ($@: $^))
 	$({AR_COMMAND}) '$({AROUT})'  $(call !quote-words!,',$({AR_MEMBERS}))

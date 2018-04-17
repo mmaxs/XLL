@@ -58,7 +58,6 @@ endif
 # use secondary expansion to make target-specific and automatic variables
 # used in rule prerequisites to be properly expanded
 .SECONDEXPANSION:
-$(MAKECMDGOALS): $$(MAKEFILE_LIST)
 $(MAKECMDGOALS): $$({LD_OBJECTS}) | $$(dir $$({LDOUT}))
 	$(info $(\) *** ($@: $^))
 	$({LD_COMMAND}) $(call !quote-words!,',$({LD_OBJECTS}))  $({LDLIBS}) $({LDSHAREDLIBS}) $({LDSTATICLIBS})  -o '$({LDOUT})'
