@@ -54,7 +54,7 @@ $(sort $(dir $({WINDRES_OBJECTS}))):
 	mkdir -p '$@'
 
 
-$({WINDRES_OBJECTS}): $(MAKEFILE_LIST)
+$({WINDRES_OBJECTS}): $([windres.makecmdgoals])
 $({WINDRES_OBJECTS}):
 	$(info $(\) *** ($@: $^))
 	$({WINDRES_COMMAND}) --input='$(filter $({WINDRES_SOURCES}),$^)' --output='$@'

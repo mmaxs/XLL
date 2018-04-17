@@ -59,7 +59,7 @@ $(sort $(dir $({OBJECTS}))):
 	mkdir -p '$@'
 
 
-$({OBJECTS}): $(MAKEFILE_LIST)
+$({OBJECTS}): $([compile.makecmdgoals])
 $({OBJECTS}):
 	$(info $(\) *** ($@: $^))
 	$({COMPILE_COMMAND}) '$(filter $({SOURCES}),$^)'  -o '$@'
