@@ -43,9 +43,10 @@ endif
 # use secondary expansion to make target-specific and automatic variables
 # used in rule prerequisites to be properly expanded
 .SECONDEXPANSION:
+$({AR_TARGETS}): $$([ar.makecmdgoals])
 $({AR_TARGETS}): $$% | $$(dir $$@)
 	$(info $(\) *** ($@($%): $^))
-	$({AR_COMMAND}) '$@'  '$^'
+	$({AR_COMMAND}) '$@'  '$%'
 
 
 $(sort $(dir $(AROUT))):
