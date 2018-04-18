@@ -39,7 +39,7 @@ windres:
 generic: windres
 	$(info $(\) @@@ ($@: $^))
 	$(MAKE) -f '$(ROOT)/Makefile.d/compile.makecmdgoals' $@
-	$(MAKE) -f '$(ROOT)/Makefile.d/link-so.makecmdgoals' $@
+	$(MAKE) -f '$(ROOT)/Makefile.d/link2-so.makecmdgoals' $@
 
 
 
