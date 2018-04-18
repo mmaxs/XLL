@@ -1,0 +1,47 @@
+# vim: ft=make
+# makecmdgoals framework: shared library linking
+# copyright (c) 2018 Mikhail Usenko <michaelus@tochka.ru>
+
+
+# don't try to rebuild this makefile
+[link2-so.makecmdgoals] := $(lastword $(MAKEFILE_LIST))
+$([link2-so.makecmdgoals]):: ;
+
+
+include $(join $(dir $([link2-so.makecmdgoals])),framework.defs)
+$(call !trace!,$$(\)[$$($${})],[link2-so.makecmdgoals])
+
+
+ifeq ($({TARGET_OS}),WINDOWS) #(1)
+
+
+override $(call !D!,LDFLAGS) += -mdll
+LDOUT ?= $(call !BUILD-PATHNAME!,$(addsuffix .dll,$(MAKECMDGOALS)))
+
+
+else #(1)
+
+
+override $(call !D!,LDFLAGS) += -shared
+
+ifdef $(call !D!,LDOUT) #(2)
+
+ifneq ($({SONAME_VERSION}),)
+override $(call !D!,LDFLAGS) += -Wl,-soname=$({LDOUT}).$({SONAME_VERSION})
+endif
+
+else #(2)
+
+LDOUT = $(call !BUILD-PATHNAME!,$(call !patsubst-filename!,%,lib%.so,$(MAKECMDGOALS)))
+ifneq ($({SONAME_VERSION}),)
+override $(call !D!,LDFLAGS) += -Wl,-soname=$(notdir $@).$({SONAME_VERSION})
+endif
+
+endif #(2)
+
+
+endif #(1)
+
+
+include $(join $(dir $([link2-so.makecmdgoals])),link2.makecmdgoals)
+
