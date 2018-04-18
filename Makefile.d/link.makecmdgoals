@@ -33,10 +33,6 @@ endif
 $(call !trace!,$${}={$$($${})},{LDSHAREDLIBS} {LDSTATICLIBS})
 
 
-LDOUT ?= $(call !BUILD-PATHNAME!,$@)
-$(call !trace!,$${}:={$$(value $${})},LDOUT)
-
-
 $(call !trace!,$${}={$$($${})},{SOURCES})
 #########################################
 ifneq ($({SOURCES}),)
@@ -53,6 +49,10 @@ $(call !trace!,$${}={$$($${})},{SOURCES})
 {LD_OBJECTS} = $({SOURCES}) $({LDEXTRAS})
 
 endif
+
+
+LDOUT ?= $(call !BUILD-PATHNAME!,$@)
+$(call !trace!,$${}:={$$(value $${})},LDOUT)
 
 
 # use secondary expansion to make target-specific and automatic variables
