@@ -33,7 +33,7 @@ AROUT ?= $(call !BUILD-PATHNAME!,$(call !patsubst-filename!,%,lib%.a,$(MAKECMDGO
 $(call !trace!,$${}:={$$(value $${})},AROUT)
 
 
-{AR_TARGETS} = $(addsuffix ($({AR_MEMBERS})),$(AROUT))
+{AR_TARGETS} = $(addsuffix ($({AR_MEMBERS})),$({AROUT}))
 
 
 {MAKECMDGOALS} = $(filter-out $({AR_TARGETS}),$(MAKECMDGOALS))
@@ -51,12 +51,13 @@ $({AR_TARGETS}): $$% | $$(dir $$@)
 	$({AR_COMMAND}) '$@'  '$%'
 
 
-$(sort $(dir $(AROUT))):
+$(sort $(dir $({AROUT}))):
 	mkdir -p '$@'
 
 
 # warn on the fall back to the predefined implicit rules (if a target file does not exist yet)
 (%): % ; $(warning The implicit rule ($@($%): $^) is discarded.)
+
 
 endif
 
