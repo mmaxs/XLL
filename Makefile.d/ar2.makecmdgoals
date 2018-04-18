@@ -4,13 +4,13 @@
 
 
 # don't try to rebuild this makefile
-[ar.makecmdgoals] := $(lastword $(MAKEFILE_LIST))
-$([ar.makecmdgoals]):: ;
+[ar2.makecmdgoals] := $(lastword $(MAKEFILE_LIST))
+$([ar2.makecmdgoals]):: ;
 
 
 # use common definitions
-include $(join $(dir $([ar.makecmdgoals])),framework.defs)
-$(call !trace!,$$(\)[$$($${})],[ar.makecmdgoals])
+include $(join $(dir $([ar2.makecmdgoals])),framework.defs)
+$(call !trace!,$$(\)[$$($${})],[ar2.makecmdgoals])
 
 
 # no default goal
@@ -30,6 +30,8 @@ ifneq ($(strip $({AR_MEMBERS})),)
 
 
 AROUT ?= $(call !BUILD-PATHNAME!,$(call !patsubst-filename!,%,lib%.a,$(MAKECMDGOALS)))
+$(call !trace!,$${}:={$$(value $${})},AROUT)
+
 
 {AR_TARGETS} = $(addsuffix ($({AR_MEMBERS})),$(AROUT))
 
@@ -43,7 +45,7 @@ endif
 # use secondary expansion to make target-specific and automatic variables
 # used in rule prerequisites to be properly expanded
 .SECONDEXPANSION:
-$({AR_TARGETS}): $$([ar.makecmdgoals])
+$({AR_TARGETS}): $$([ar2.makecmdgoals])
 $({AR_TARGETS}): $$% | $$(dir $$@)
 	$(info $(\) *** ($@($%): $^))
 	$({AR_COMMAND}) '$@'  '$%'

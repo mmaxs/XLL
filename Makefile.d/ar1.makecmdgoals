@@ -4,13 +4,13 @@
 
 
 # don't try to rebuild this makefile
-[ar.makecmdgoals] := $(lastword $(MAKEFILE_LIST))
-$([ar.makecmdgoals]):: ;
+[ar1.makecmdgoals] := $(lastword $(MAKEFILE_LIST))
+$([ar1.makecmdgoals]):: ;
 
 
 # use common definitions
-include $(join $(dir $([ar.makecmdgoals])),framework.defs)
-$(call !trace!,$$(\)[$$($${})],[ar.makecmdgoals])
+include $(join $(dir $([ar1.makecmdgoals])),framework.defs)
+$(call !trace!,$$(\)[$$($${})],[ar1.makecmdgoals])
 
 
 # no default goal
@@ -30,6 +30,7 @@ ifneq ($(strip $({AR_MEMBERS})),)
 
 
 AROUT ?= $(call !BUILD-PATHNAME!,$(call !patsubst-filename!,%,lib%.a,$@))
+$(call !trace!,$${}:={$$(value $${})},AROUT)
 
 
 # use secondary expansion to make target-specific and automatic variables
