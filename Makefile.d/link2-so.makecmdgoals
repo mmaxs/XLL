@@ -26,8 +26,10 @@ override $(call !D!,LDFLAGS) += -shared
 
 ifdef $(call !D!,LDOUT) #(2)
 
-ifneq ($({SONAME_VERSION}),)
-override $(call !D!,LDFLAGS) += -Wl,-soname=$({LDOUT}).$({SONAME_VERSION})
+# if LDOUT is defined by the user, then it is considered as some special output name,
+# and so use special SONAME
+ifneq ($({SONAME}),)
+override $(call !D!,LDFLAGS) += -Wl,-soname=$({SONAME})
 endif
 
 else #(2)

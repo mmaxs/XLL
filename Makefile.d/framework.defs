@@ -53,6 +53,7 @@ endef
 {LDSHARED} = $(strip $($(call !D!,LDSHARED)))
 {LDSTATIC} = $(strip $($(call !D!,LDSTATIC)))
 {LDOUT} = $($(call !D!,LDOUT))
+{SONAME} = $($(call !D!,SONAME))
 {SONAME_VERSION} = $(strip $($(call !D!,SONAME_VERSION)))
 {SOFILE_VERSION} = $(strip $($(call !D!,SOFILE_VERSION)))
 
