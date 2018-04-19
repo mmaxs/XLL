@@ -34,10 +34,22 @@ endif
 
 else #(2)
 
+ifneq ($({SONAME}),) #(3)
 LDOUT = $(call !BUILD-PATHNAME!,$(call !patsubst-filename!,%,lib%.so,$(MAKECMDGOALS)))
+override $(call !D!,LDFLAGS) += -Wl,-soname=$({SONAME})
+else #(3)
 ifneq ($({SONAME_VERSION}),)
-override $(call !D!,LDFLAGS) += -Wl,-soname=$(notdir $@).$({SONAME_VERSION})
+  ifneq ($({SOFILE_VERSION}),)
+    LDOUT = $(call !BUILD-PATHNAME!,$(call !patsubst-filename!,%,lib%.so.$({SONAME_VERSION}).$({SOFILE_VERSION}),$(MAKECMDGOALS)))
+    override $(call !D!,LDFLAGS) += -Wl,-soname=$(patsubst %.$({SOFILE_VERSION}),%,$(notdir $@))
+  else
+    LDOUT = $(call !BUILD-PATHNAME!,$(call !patsubst-filename!,%,lib%.so,$(MAKECMDGOALS)))
+    override $(call !D!,LDFLAGS) += -Wl,-soname=$(notdir $@).$({SONAME_VERSION})
+  endif
+else
+  LDOUT = $(call !BUILD-PATHNAME!,$(call !patsubst-filename!,%,lib%.so,$(MAKECMDGOALS)))
 endif
+endif #(3)
 
 endif #(2)
 

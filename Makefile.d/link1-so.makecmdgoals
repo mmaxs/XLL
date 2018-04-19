@@ -35,10 +35,21 @@ endif
 else #(2)
 
 {LINKNAME} = $(call !patsubst-filename!,%,lib%.so,$@))
+ifneq ($({SONAME}),) #(3)
+LDOUT = $(call !BUILD-PATHNAME!,$({LINKNAME}))
+override $(call !D!,LDFLAGS) += -Wl,-soname=$({SONAME})
+else #(3)
 ifneq ($({SONAME_VERSION}),)
-override $(call !D!,LDFLAGS) += -Wl,-soname=$(notdir $({LINKNAME})).$({SONAME_VERSION})
+  ifneq ($({SOFILE_VERSION}),)
+    LDOUT = $(call !BUILD-PATHNAME!,$({LINKNAME})).$({SONAME_VERSION}).$({SOFILE_VERSION})
+  else
+    LDOUT = $(call !BUILD-PATHNAME!,$({LINKNAME}))
+  endif
+  override $(call !D!,LDFLAGS) += -Wl,-soname=$(notdir $({LINKNAME})).$({SONAME_VERSION})
+else
+  LDOUT = $(call !BUILD-PATHNAME!,$({LINKNAME}))
 endif
-LDOUT = $(call !BUILD-PATHNAME!,$({LINKNAME}))$(if $(and $({SONAME_VERSION}),$({SOFILE_VERSION})),.$({SONAME_VERSION}).$({SOFILE_VERSION}))
+endif #(3)
 
 endif #(2)
 
