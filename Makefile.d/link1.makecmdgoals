@@ -4,13 +4,13 @@
 
 
 # don't try to rebuild this makefile
-[link.makecmdgoals] := $(lastword $(MAKEFILE_LIST))
-$([link.makecmdgoals]):: ;
+[link1.makecmdgoals] := $(lastword $(MAKEFILE_LIST))
+$([link1.makecmdgoals]):: ;
 
 
 # use common definitions
-include $(join $(dir $([link.makecmdgoals])),framework.defs)
-$(call !trace!,$$(\)[$$($${})],[link.makecmdgoals])
+include $(join $(dir $([link1.makecmdgoals])),framework.defs)
+$(call !trace!,$$(\)[$$($${})],[link1.makecmdgoals])
 
 
 # no default goal

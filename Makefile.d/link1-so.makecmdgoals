@@ -4,12 +4,12 @@
 
 
 # don't try to rebuild this makefile
-[link-so.makecmdgoals] := $(lastword $(MAKEFILE_LIST))
-$([link-so.makecmdgoals]):: ;
+[link1-so.makecmdgoals] := $(lastword $(MAKEFILE_LIST))
+$([link1-so.makecmdgoals]):: ;
 
 
-include $(join $(dir $([link-so.makecmdgoals])),framework.defs)
-$(call !trace!,$$(\)[$$($${})],[link-so.makecmdgoals])
+include $(join $(dir $([link1-so.makecmdgoals])),framework.defs)
+$(call !trace!,$$(\)[$$($${})],[link1-so.makecmdgoals])
 
 
 ifeq ($({TARGET_OS}),WINDOWS) #(1)
@@ -49,5 +49,5 @@ endif #(2)
 endif #(1)
 
 
-include $(join $(dir $([link-so.makecmdgoals])),link.makecmdgoals)
+include $(join $(dir $([link1-so.makecmdgoals])),link1.makecmdgoals)
 
