@@ -27,21 +27,16 @@ override $(call !D!,LDFLAGS) += -shared
 ifdef $(call !D!,LDOUT) #(2)
 
 ifneq ($({SONAME_VERSION}),)
-{SONAME} = $({LDOUT}).$({SONAME_VERSION})
-override $(call !D!,LDFLAGS) += -Wl,-soname=$({SONAME})
+override $(call !D!,LDFLAGS) += -Wl,-soname=$(notdir $({LDOUT})).$({SONAME_VERSION})
 endif
 
 else #(2)
 
-{LINK_NAME} = $(call !BUILD-PATHNAME!,$(call !patsubst-filename!,%,lib%.so,$@))
-
+{LINKNAME} = $(call !patsubst-filename!,%,lib%.so,$@))
 ifneq ($({SONAME_VERSION}),)
-{SONAME} = $({LINK_NAME}).$({SONAME_VERSION})
-override $(call !D!,LDFLAGS) += -Wl,-soname=$({SONAME})
-LDOUT = $(if $({SOFILE_VERSION}),$({SONAME}).$({SOFILE_VERSION}),$({LINK_NAME}))
-else
-LDOUT = $({LINK_NAME})
+override $(call !D!,LDFLAGS) += -Wl,-soname=$(notdir $({LINKNAME})).$({SONAME_VERSION})
 endif
+LDOUT = $(call !BUILD-PATHNAME!,$({LINKNAME}))$(if $(and $({SONAME_VERSION}),$({SOFILE_VERSION})),.$({SONAME_VERSION}).$({SOFILE_VERSION}))
 
 endif #(2)
 
