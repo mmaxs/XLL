@@ -50,7 +50,8 @@ $(call !trace!,$${}={$$($${})},{OBJECT_PREREQUISITES})
 $(eval $({OBJECT_PREREQUISITES}))
 
 
-$(sort $(dir $({WINDRES_OBJECTS}))):
+{BUILD_DIRS} = $(sort $(dir $({WINDRES_OBJECTS})))
+$({BUILD_DIRS}):
 	mkdir -p '$@'
 
 

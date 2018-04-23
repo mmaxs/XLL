@@ -51,7 +51,8 @@ $({AR_TARGETS}): $$% | $$(dir $$@)
 	$({AR_COMMAND}) '$@'  '$%'
 
 
-$(sort $(dir $({AROUT}))):
+{BUILD_DIRS} = $(sort $(dir $({AROUT})))
+$({BUILD_DIRS}):
 	mkdir -p '$@'
 
 

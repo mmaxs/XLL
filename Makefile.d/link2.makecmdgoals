@@ -70,6 +70,7 @@ $({LDOUT}): $$({LD_OBJECTS}) | $$(dir $$@)
 	$({LD_COMMAND}) $(call !quote-words!,',$({LD_OBJECTS}))  $({LDLIBS}) $({LDSHAREDLIBS}) $({LDSTATICLIBS})  -o '$@'
 
 
-$(sort $(dir $({LDOUT}))):
+{BUILD_DIRS} = $(sort $(dir $({LDOUT})))
+$({BUILD_DIRS}):
 	mkdir -p '$@'
 
