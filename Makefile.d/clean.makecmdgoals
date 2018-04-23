@@ -19,15 +19,26 @@ $(call !trace!,$$(\)[$$($${})],[clean.makecmdgoals])
 .PHONY: $(MAKECMDGOALS)
 
 
-{TARGET_DIR} = $({CURRENT_BUILD_DIR})
+{BUILD_DIRS} = $(sort $(dir $(call !BUILD-PATHNAME!,$(MAKECMDGOALS))))
+$({BUILD_DIRS}): ;
 
-$(MAKECMDGOALS):
-	$(info $(\) *** ($@: $^))
-	$(if $(filter-out $(realpath $(BUILD_ROOT))/%,$(realpath $({TARGET_DIR}))/),\
-		$(warning The 'clean' rule for the path '$({TARGET_DIR})' being not under the BUILD_ROOT='$(BUILD_ROOT)' is discarded.),\
-		$(if $(call !is-equal!,$(realpath $(ROOT)),$(realpath $({TARGET_DIR}))),\
-			$(warning The 'clean' rule for the path '$({TARGET_DIR})' being the same as the ROOT='$(ROOT)' is discarded.),\
-			test "$$(realpath -e '$({TARGET_DIR})')" != "/" && \
-			test "$$(realpath -e '$({TARGET_DIR})')" != "//" && \
-			rm -vrf '$({TARGET_DIR})'/*))
+
+.PHONY: clean
+clean: $({BUILD_DIRS})
+	$(foreach _,$^,\
+	$(info $(\) *** ($@: '$_'))\
+	$(if $(filter-out $(realpath $(BUILD_ROOT))/%,$(realpath $_)/),\
+		$(warning The rule ($@: '$_') for the path being not under the BUILD_ROOT='$(BUILD_ROOT)' is discarded.),\
+		$(if $(call !is-equal!,$(realpath $(ROOT)),$(realpath $_)),\
+			$(warning The rule ($@: '$_') for the path being the same as the ROOT='$(ROOT)' is discarded.),\
+			test "$$(realpath -e '$_')" != "/" && \
+			test "$$(realpath -e '$_')" != "//" && \
+			rm -vrf '$_'/*)))
+
+
+# do clean the build directories
+{MAKECMDGOALS} = $(filter-out clean,$(MAKECMDGOALS))
+ifneq ($({MAKECMDGOALS}),)
+$({MAKECMDGOALS}): clean ;
+endif
 
